@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "735177264463",
+    "project_id": "pruebas-c75fd",
+    "storage_bucket": "pruebas-c75fd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735177264463:android:ab1381dfa7096ba1e9893a",
+        "android_client_info": {
+          "package_name": "com.pruebas.push_notifications"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDm3NZH0LwC05CSLjKM00PHG4Yh3BASjjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

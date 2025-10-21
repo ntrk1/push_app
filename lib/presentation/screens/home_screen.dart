@@ -3,6 +3,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:push_notifications/presentation/blocs/notifications/notifications_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -10,24 +12,27 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: context.select(
-          (NotificationsBloc bloc) => Text('Permisos: ${bloc.state.status}')
+        return Scaffold(
+        appBar: AppBar(
+          title: context.select(
+            (NotificationsBloc bloc) => Text('${bloc.state.status}')
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(onPressed: () {
+              context.read<NotificationsBloc>().requestPermision();
+            }, 
+            icon: Icon(Icons.settings)
+            )
+          ],
         ),
-        centerTitle: true,
-        actions: [
-          IconButton(onPressed: () {
-            context.read<NotificationsBloc>().requestPermision();
-          }, 
-          icon: Icon(Icons.settings)
-          )
-        ],
-      ),
-      body: _HomeView(),
-    );
+        body: _HomeView(),
+      );
+      }
+       
+    
   }
-}
+
 
 
 
@@ -36,11 +41,22 @@ class _HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notifications = context.watch<NotificationsBloc>().state.notifications;
+
     return ListView.builder(
-      itemCount: 0,
-      
+      itemCount: notifications.length,
       itemBuilder: (context, index) {
-        return ListTile();
+        final notification = notifications[index];
+        return ListTile(
+          title: Text(notification.title),
+          subtitle: Text(notification.body),
+          leading: notification.imageUrl != null
+          ? Image.network(notification.imageUrl!)
+          : null,
+          onTap: () {
+            context.push('/push-details/${notification.messageId}');
+          },
+        );
       },
     );
   }
