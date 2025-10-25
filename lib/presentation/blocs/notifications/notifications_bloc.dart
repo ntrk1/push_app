@@ -20,9 +20,21 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  int pushNotificationId = 0;
+
+  final Future<void> Function()? requestPermissionLocalNotification;
+  final void Function({
+     required int id,
+     String? title,
+     String? body,
+     String? data
+  })? showLocalNotification;
   
 
-  NotificationsBloc() : super(NotificationsState()) {
+  NotificationsBloc({
+    this.showLocalNotification,
+    this.requestPermissionLocalNotification
+    }) : super(NotificationsState()) {
     on<NotificationStatusChanged>(_notificationStatusChanged);
     on<NotificationInScreen>(_onNotificationInScreen);
     _initialStatusCheck();
@@ -50,6 +62,9 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       provisional: false,
       sound: true
     );
+    if (requestPermissionLocalNotification != null) {
+    await requestPermissionLocalNotification!();
+    }
     add(NotificationStatusChanged(settings.authorizationStatus));
     
   }
@@ -78,6 +93,14 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       : message.notification!.apple?.imageUrl
       );
 
+      if (showLocalNotification != null) {
+      showLocalNotification!(
+        id: ++pushNotificationId,
+        body: notification.body,
+        data: notification.messageId,
+        title: notification.title,
+      );
+      }
       add(NotificationInScreen(notification));
   } 
   void _onForegroundMessage() {
@@ -87,6 +110,8 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   
       void _getFCMToken() async {
     if (state.status != AuthorizationStatus.authorized) return;
+    final token = await messaging.getToken();
+    print(token);
   }
 
 
